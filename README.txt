@@ -8,6 +8,6 @@ Require 'cargo install bunyan'
 
 Docker build --tag zero2prod .
 
-'sqlx prepare' performs the same work of cargo build but same the outcome in a .sqlx file 
+'sqlx prepare' performs the same work of cargo build but same the outcome in a .sqlx file. Dockerfile needs to receive the instruction: ENV SQLX_OFFLINE true 
 cargo sqlx prepare --workspace -- --all-targets
 
