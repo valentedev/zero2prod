@@ -33,7 +33,7 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
     name = "Saving new subscriber details in the database",
     skip(form, pool)
 )]
-// this function takes care of the database logic and has no awaress of the surronding web framework (e.g. web::Form)
+// this function takes care of the database logic and has no awareness of the surronding web framework (e.g. web::Form)
 pub async fn insert_subscriber(pool: &PgPool, form: &FormData) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
