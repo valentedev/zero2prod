@@ -23,6 +23,6 @@ doctl apps update <APP-ID-NUMBER> --spec=spec.yaml
 
 Migrate production database
 
-DATABASE_URL=postgresql://newsletter:AVNS_El7l57Kz5cIamUra_Xb@app-247f4879-5827-45e1-91b0-cadbc8a5a261-do-user-4836224-0.j.db.ondigitalocean.com:25060/newsletter?sslmode=require sqlx migrate run
+DATABASE_URL=<DB_URL_STRING> sqlx migrate run
 
 
