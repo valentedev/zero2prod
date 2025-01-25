@@ -21,8 +21,4 @@ Update deploy...
 
 doctl apps update <APP-ID-NUMBER> --spec=spec.yaml
 
-Migrate production database
-
-DATABASE_URL=<DB_URL_STRING> sqlx migrate run
-
 
