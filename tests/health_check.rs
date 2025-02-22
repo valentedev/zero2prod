@@ -1,5 +1,5 @@
 //! tests/health_check.rs
-use secrecy::{ExposeSecret, Secret};
+use secrecy::Secret;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use std::sync::LazyLock;
@@ -54,17 +54,18 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         ..config.clone()
     };
 
-    let mut connection =
-        PgConnection::connect_with(&maintenance_settings.connect_options())
-            .await
-            .expect("Failed to connect to Postgres");
+    let mut connection = PgConnection::connect_with(&maintenance_settings.connect_options())
+        .await
+        .expect("Failed to connect to Postgres");
     connection
         .execute(format!(r#"CREATE DATABASE "{}";"#, config.database_name).as_str())
         .await
         .expect("Failed to create database.");
 
     // Migrate database
-    let connection_pool = PgPool::connect_with(config.connect_options()).await.expect("Failed to connect to Postgres");
+    let connection_pool = PgPool::connect_with(config.connect_options())
+        .await
+        .expect("Failed to connect to Postgres");
     sqlx::migrate!("./migrations")
         .run(&connection_pool)
         .await
@@ -112,6 +113,37 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
     assert_eq!(saved.email, "rodrigovalente@hotmail.com");
     assert_eq!(saved.name, "rodrigo valente");
+}
+
+#[tokio::test]
+// async fn subscribe_returns_a_200_when_fields_are_present_but_empty() {
+async fn subscribe_returns_a_400_when_fields_are_present_but_invalid() {
+    //Arrange
+    let app = spawn_app().await;
+    let client = reqwest::Client::new();
+    let test_cases = vec![
+        ("name=&email=ursula_le_guin%40gmail.com", "empty name"),
+        ("name=Ursula&email=", "empty email"),
+        ("name=Ursula&email=definately-not-an-email", "INvalid email"),
+    ];
+
+    for (body, description) in test_cases {
+        let response = client
+            .post(&format!("{}/subscriptions", &app.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request.");
+
+        assert_eq!(
+            // 200,
+            400,
+            response.status().as_u16(),
+            "The API did not return a 400 Bad Request when the payload was {}.",
+            description
+        );
+    }
 }
 
 #[tokio::test]
