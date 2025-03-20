@@ -1,10 +1,9 @@
 //! src/routes/subscription.rs
-use crate::domain::{NewSubscriber, SubscriberName, SubscriberEmail};
+use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
 use actix_web::{web, HttpResponse};
 use chrono::Utc;
 use sqlx::PgPool;
 use uuid::Uuid;
-
 
 #[derive(serde::Deserialize)]
 pub struct FormData {
@@ -59,9 +58,9 @@ pub async fn subscribe(form: web::Form<FormData>, pool: web::Data<PgPool>) -> Ht
 }
 
 // pub fn parse_subscriber(form: FormData) -> Result<NewSubscriber, String> {
-    // let name = SubscriberName::parse(form.name)?;
-    // let email = SubscriberEmail::parse(form.email)?;
-    // Ok(NewSubscriber {name, email})
+// let name = SubscriberName::parse(form.name)?;
+// let email = SubscriberEmail::parse(form.email)?;
+// Ok(NewSubscriber {name, email})
 // }
 
 impl TryFrom<FormData> for NewSubscriber {
@@ -70,7 +69,7 @@ impl TryFrom<FormData> for NewSubscriber {
     fn try_from(value: FormData) -> Result<Self, Self::Error> {
         let name = SubscriberName::parse(value.name)?;
         let email = SubscriberEmail::parse(value.email)?;
-        Ok(Self {name, email})
+        Ok(Self { name, email })
     }
 }
 

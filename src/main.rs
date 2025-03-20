@@ -1,8 +1,8 @@
 //! src/main.rs
 use sqlx::postgres::PgPoolOptions;
-use zero2prod::email_client::EmailClient;
 use std::net::TcpListener;
 use zero2prod::configuration::get_configuration;
+use zero2prod::email_client::EmailClient;
 use zero2prod::startup::run;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 
@@ -20,9 +20,17 @@ async fn main() -> Result<(), std::io::Error> {
         PgPoolOptions::new().connect_lazy_with(configuration.database.connect_options());
 
     // Email Client using 'configuration'
-    let sender_email = configuration.email_client.sender().expect("Invalid sender email address");
-    let email_client = EmailClient::new(configuration.email_client.base_url, sender_email);
-
+    let sender_email = configuration
+        .email_client
+        .sender()
+        .expect("Invalid sender email address");
+    let timeout = configuration.email_client.timeout();
+    let email_client = EmailClient::new(
+        configuration.email_client.base_url,
+        sender_email,
+        configuration.email_client.authorization_token,
+        timeout,
+    );
 
     let address = format!(
         "{}:{}",
